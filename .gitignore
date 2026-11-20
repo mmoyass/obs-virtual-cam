@@ -16,6 +16,8 @@
 !CMakePresets.json
 !LICENSE
 !README.md
+!/install.bat
+!/uninstall.bat
 
 # Exclude lock files
 *.lock.json

@@ -11,7 +11,7 @@
 #define MAX_WIDTH 4096
 #define MAX_HEIGHT 3072
 #define MAX_FRAMETIME 1000000
-#define MIN_FRAMETIME 166666
+#define MIN_FRAMETIME 166660
 #define SLEEP_DURATION 5
 
 CUnknown *WINAPI CreateInstance(LPUNKNOWN lpunk, HRESULT *phr)
@@ -242,10 +242,10 @@ bool CVCamStream::ListSupportFormat()
 	if (format_list.size() > 0)
 		format_list.clear();
 
-	format_list.push_back(struct format(1920, 1080, 333333));
-	format_list.push_back(struct format(1280, 720, 333333));
-	format_list.push_back(struct format(960, 540, 333333));
-	format_list.push_back(struct format(640, 360, 333333));
+	format_list.push_back(struct format(1920, 1080, 166667));
+	format_list.push_back(struct format(1280, 720, 166667));
+	format_list.push_back(struct format(960, 540, 166667));
+	format_list.push_back(struct format(640, 360, 166667));
 
 	return true;
 }
@@ -310,7 +310,8 @@ HRESULT CVCamStream::CheckMediaType(const CMediaType *pMediaType)
 	if (*subtype != MEDIASUBTYPE_YUY2)
 		return E_INVALIDARG;
 
-	if (pvi->AvgTimePerFrame < 166666 || pvi->AvgTimePerFrame > 1000000)
+	if (pvi->AvgTimePerFrame < MIN_FRAMETIME ||
+	    pvi->AvgTimePerFrame > MAX_FRAMETIME)
 		return E_INVALIDARG;
 
 	if (ValidateResolution(pvi->bmiHeader.biWidth, pvi->bmiHeader.biHeight))
@@ -434,7 +435,6 @@ HRESULT STDMETHODCALLTYPE CVCamStream::GetStreamCaps(int iIndex,
 	pvi->bmiHeader.biWidth = format_list[iIndex].width;
 	pvi->bmiHeader.biHeight = format_list[iIndex].height;
 	pvi->AvgTimePerFrame = format_list[iIndex].time_per_frame;
-	pvi->AvgTimePerFrame = 333333;
 	pvi->bmiHeader.biCompression = MAKEFOURCC('Y', 'U', 'Y', '2');
 	pvi->bmiHeader.biBitCount = 16;
 	pvi->bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
@@ -479,14 +479,14 @@ HRESULT STDMETHODCALLTYPE CVCamStream::GetStreamCaps(int iIndex,
 	pvscc->StretchTapsY = 0;
 	pvscc->ShrinkTapsX = 0;
 	pvscc->ShrinkTapsY = 0;
-	pvscc->MinFrameInterval = pvi->AvgTimePerFrame;
-	pvscc->MaxFrameInterval = pvi->AvgTimePerFrame;
+	pvscc->MinFrameInterval = MIN_FRAMETIME;
+	pvscc->MaxFrameInterval = MAX_FRAMETIME;
 	pvscc->MinBitsPerSecond = pvi->bmiHeader.biWidth *
 				  pvi->bmiHeader.biHeight * 2 * 8 *
-				  (10000000 / (LONG)pvi->AvgTimePerFrame);
+				  (10000000 / MAX_FRAMETIME);
 	pvscc->MaxBitsPerSecond = pvi->bmiHeader.biWidth *
 				  pvi->bmiHeader.biHeight * 2 * 8 *
-				  (10000000 / (LONG)pvi->AvgTimePerFrame);
+				  (10000000 / MIN_FRAMETIME);
 
 	return S_OK;
 }

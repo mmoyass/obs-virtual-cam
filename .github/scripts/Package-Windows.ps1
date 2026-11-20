@@ -65,6 +65,7 @@ function Package {
     Remove-Item @RemoveArgs
 
     Log-Group "Archiving ${ProductName}..."
+    Copy-Item -Path "${ProjectRoot}/install.bat", "${ProjectRoot}/uninstall.bat" -Destination "${ProjectRoot}/release/${Configuration}" -Force
     $CompressArgs = @{
         Path = (Get-ChildItem -Path "${ProjectRoot}/release/${Configuration}" -Exclude "${OutputName}*.*")
         CompressionLevel = 'Optimal'

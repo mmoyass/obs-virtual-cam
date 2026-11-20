@@ -138,6 +138,6 @@ private:
 	int obs_format = 0;
 	uint32_t obs_width = 1920;
 	uint32_t obs_height = 1080;
-	uint64_t obs_frame_time = 333333;
+	uint64_t obs_frame_time = 166667;
 	dst_scale_context scale_info;
 };
